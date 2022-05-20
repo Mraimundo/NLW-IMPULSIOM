@@ -1,12 +1,13 @@
 import * as React from "react";
 import { useState } from "react";
+
 import { FeedbackTypeStap } from "./Staps/FeedbackTypeStap";
+import { FeedbackContentStap } from "./Staps/FeedbackContentStap";
+import { FeedbackSucessStap } from "./Staps/FeedbackSucessStap";
 
 import bugImage from "../../assets/bug.svg";
 import ideaImageUrl from "../../assets/idea.svg";
 import thoughtImageUrl from "../../assets/thought.svg";
-
-import { FeedbackContentStap } from "./Staps/FeedbackContentStap";
 
 export const feedbackTypes = {
   BUG: {
@@ -36,12 +37,31 @@ export type FeedbackType = keyof typeof feedbackTypes;
 
 export function WidgetForm() {
   const [feedbackType, setFeedbackType] = useState<FeedbackType | null>(null);
+  const [feedbackSent, setFeedbackSent] = useState(false);
+
+  function handleRestartFeedback() {
+    setFeedbackSent(false);
+    setFeedbackType(null);
+  }
+
   return (
     <div className="bg-zinc-900 p-4 relative rounded-2xl mb-4 flex flex-col items-center shadow-lg w=[calc(100vw-2rem)] md:w-auto">
-      {!feedbackType ? (
-        <FeedbackTypeStap onFeedbackTypeChangad={setFeedbackType} />
+      {feedbackSent ? (
+        <FeedbackSucessStap
+          onFeedbackRestartRequested={handleRestartFeedback}
+        />
       ) : (
-        <FeedbackContentStap />
+        <>
+          {!feedbackType ? (
+            <FeedbackTypeStap onFeedbackTypeChangad={setFeedbackType} />
+          ) : (
+            <FeedbackContentStap
+              feedbackType={feedbackType}
+              onFeedbackRestartRequested={handleRestartFeedback}
+              onFeedbackSent={() => setFeedbackSent(true)}
+            />
+          )}
+        </>
       )}
       <footer className="text-xs text-neutral-400">
         Feito por horas pelo Mouzinho
